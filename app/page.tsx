@@ -1,5 +1,10 @@
-import { ComponentExample } from "@/components/component-example";
+import { BoardProvider } from "@/hooks/use-board";
+import { Board } from "@/components/kanban/board";
 
 export default function Page() {
-return <ComponentExample />;
+  return (
+    <BoardProvider>
+      <Board />
+    </BoardProvider>
+  );
 }
