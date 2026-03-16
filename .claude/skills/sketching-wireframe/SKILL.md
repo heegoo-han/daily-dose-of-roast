@@ -37,19 +37,22 @@ N개 화면으로 구성합니다:
 
 ## 1단계: 기본 화면
 
-그룹핑된 기본 화면을 와이어프레임으로 생성한다.
+그룹핑의 첫 번째 화면을 **상호작용 없는 기본 상태**로 생성한다.
+- 대표 데이터가 채워진 평상시 모습 (드래그, 모달 등 상호작용 상태 없음)
+- 전체 레이아웃을 한눈에 파악할 수 있는 뷰
 
-1. 와이어프레임 생성
-   - 입력: `assets/template.html`, `references/style-guide.md`
-   - 출력: `artifacts/<feature>/wireframe.html`
+**입력**: `assets/template.html`, `references/style-guide.md`
+**출력**: `artifacts/<feature>/wireframe.html`
 
-2. 로컬 서버 실행
-   - `Bash: bunx serve artifacts/<feature> -l 3333 &`
-   - `Bash: open http://localhost:3333/wireframe.html`
+Vite dev server를 실행하고 레이아웃 피드백을 받는다:
+```
+Bash(run_in_background): bunx vite artifacts/<feature> --port=3456
+open http://localhost:3456/wireframe.html
+```
 
-3. 피드백 루프
-   - 사용자가 자연어로 피드백 → wireframe.html 수정 → 서버가 자동 반영
-   - spec 변경이 필요하면 사용자 승인 후 `spec.md`와 `spec.yaml`을 함께 반영
+피드백 루프:
+- 사용자가 자연어로 피드백 → wireframe.html 수정
+- spec 변경이 필요하면 사용자 승인 후 `spec.md`와 `spec.yaml`을 함께 반영
 
 레이아웃이 확정되면 2단계로 진행한다.
 
