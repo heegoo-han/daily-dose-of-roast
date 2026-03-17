@@ -5,9 +5,11 @@ Next.js 16 + React 19 프로젝트 템플릿
 ## 기술 스택
 
 - **Framework**: Next.js 16 (App Router)
-- **UI**: React 19, Tailwind CSS 4, shadcn/ui
+- **UI**: React 19, Tailwind CSS 4, shadcn/ui, Radix UI, Base UI
+- **Icons**: Lucide React
 - **Testing**: Vitest, Testing Library
 - **Lint**: ESLint
+- **Package Manager**: Bun
 
 ## 시작하기
 
@@ -25,7 +27,7 @@ bun dev
 | `bun dev` | 개발 서버 실행 |
 | `bun run build` | 프로덕션 빌드 |
 | `bun start` | 프로덕션 서버 실행 |
-| `bun lint` | ESLint 실행 |
+| `bun run lint` | ESLint 실행 |
 | `bun test` | 테스트 실행 |
 | `bun run test:watch` | 테스트 워치 모드 |
 
@@ -38,19 +40,28 @@ Claude Code hooks 기반 자동 품질 게이트 (`.claude/settings.json`)
 | **PostToolUse** | `Write\|Edit` | ESLint auto-fix + `auto-test.sh` — 관련 테스트 자동 실행 |
 | **Stop** | 작업 완료 시 | `final-test-gate.sh` — 전체 테스트 실행, 실패 시 중단 |
 
+## 테스트 파일 컨벤션
+
+| 파일 패턴 | 용도 |
+|---|---|
+| `*.spec.test.tsx` | 수용 기준 테스트 (`artifacts/spec.yaml`에서 파생) |
+| `*.test.tsx` | 구현 테스트 (단위/통합) |
+
 ## Claude Code 워크플로우
 
-이 프로젝트는 `/spec` → `/wireframe` → `Plan Mode` → `Implementation` 순서로 개발합니다.
+이 프로젝트는 `/writing-spec` → `/sketching-wireframe` → `Plan Mode` → `Implementation` 순서로 개발합니다.
 
-### 1. Spec (`/spec`)
+`artifacts/spec.yaml`이 전체 앱의 **단일 불변 계약**입니다. spec.yaml의 시나리오에서 spec 테스트를 파생하고, 구현이 spec.yaml과 맞지 않으면 구현을 수정합니다.
 
-기능의 요구사항을 구조화합니다. 시나리오, 성공 기준, 전제 조건을 정의하고 `artifacts/<feature>/spec.md`에 저장합니다. 승인 후 `artifacts/spec.yaml`에 구조화된 시나리오를 추출합니다.
+### 1. Spec (`/writing-spec`)
 
-### 2. Wireframe (`/wireframe`)
+기능의 요구사항을 구조화합니다. [상황]/[동작] 형식의 시나리오, 성공 기준, 전제 조건을 정의하고 `artifacts/<feature>/spec.md`에 저장합니다. 승인 후 `artifacts/spec.yaml`에 구조화된 시나리오를 추출합니다.
 
-spec을 기반으로 HTML 와이어프레임을 생성합니다. 레이아웃과 컴포넌트 구조를 브라우저에서 빠르게 검증하고 `artifacts/<feature>/wireframe.html`에 저장합니다.
+### 2. Wireframe (`/sketching-wireframe`)
 
-### 3. Plan Mode
+spec을 기반으로 HTML 와이어프레임을 생성합니다. Tailwind + 시스템 monospace로 레이아웃과 컴포넌트 구조를 브라우저에서 빠르게 검증하고 `artifacts/<feature>/wireframe.html`에 저장합니다.
+
+### 3. Plan Mode (`/writing-plan`)
 
 spec.yaml과 wireframe을 참조하여 구현 계획을 수립합니다. spec.yaml 기반 spec 테스트(`*.spec.test.tsx`) 생성을 첫 번째 태스크로 배치하고, 각 태스크에 수용 기준을 포함합니다.
 
@@ -62,3 +73,5 @@ TDD로 구현합니다.
 2. 구현 테스트 작성 (`*.test.tsx`) — 단위 로직 검증 (Red)
 3. 최소 코드 구현 (Green)
 4. 리팩터링
+
+> spec 테스트(`*.spec.test.tsx`)는 생성 이후 수정 금지. 테스트가 실패하면 구현을 수정합니다.
