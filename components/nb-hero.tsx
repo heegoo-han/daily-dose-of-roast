@@ -1,4 +1,8 @@
+"use client"
+
 import { MapPin } from "lucide-react"
+import { motion } from "motion/react"
+import BeamsBackground from "@/components/kokonutui/beams-background"
 
 type NbHeroProps = {
   location: string
@@ -7,30 +11,41 @@ type NbHeroProps = {
 
 export function NbHero({ location, locationDetail }: NbHeroProps) {
   return (
-    <header className="bg-foreground border-[3px] border-foreground shadow-[6px_6px_0_hsl(var(--border))] px-5 py-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-background/60 mb-1">
-            ☕ Find Your Cup
-          </p>
-          <h1 className="text-4xl font-black leading-none tracking-tight text-background">
-            COFFEE
-            <br />
-            NOW
-          </h1>
-        </div>
-        <div className="border-2 border-background/60 px-2.5 py-1.5 mt-1">
-          <div className="flex items-center gap-1">
-            <MapPin className="size-3 text-background" />
-            <span className="text-[10px] font-bold uppercase tracking-wide text-background">
-              {location}
+    <div className="relative h-52 overflow-hidden rounded-2xl">
+      <BeamsBackground intensity="medium" className="absolute inset-0 h-52 min-h-0">
+        <div className="flex h-52 flex-col items-center justify-center gap-3 px-4 text-center">
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-1.5"
+          >
+            <MapPin className="size-3.5 text-neutral-500 dark:text-neutral-400" />
+            <span className="text-xs font-semibold text-neutral-500 uppercase tracking-widest dark:text-neutral-400">
+              {locationDetail}
             </span>
-          </div>
-          {locationDetail ? (
-            <p className="text-[9px] text-background/50 mt-0.5">{locationDetail}</p>
-          ) : null}
+          </motion.div>
+
+          <motion.h1
+            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="font-bold text-4xl text-neutral-900 tracking-tighter dark:text-white"
+          >
+            {location}{" "}
+            <span className="text-indigo-600 dark:text-indigo-400">커피</span>
+          </motion.h1>
+
+          <motion.p
+            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-xs text-neutral-400 dark:text-neutral-500"
+          >
+            ☕ 근처 카페를 찾아보세요
+          </motion.p>
         </div>
-      </div>
-    </header>
+      </BeamsBackground>
+    </div>
   )
 }

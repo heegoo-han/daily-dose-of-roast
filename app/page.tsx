@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { NbHero } from "@/components/nb-hero"
 import { SortBar } from "@/components/sort-bar"
 import { CoffeeCard } from "@/components/coffee-card"
@@ -8,6 +9,7 @@ import { CAFES } from "@/lib/coffee-data"
 
 export default function CoffeePage() {
   const { sort, setSort, sortedCafes } = useCoffeeSort(CAFES)
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   return (
     <main className="min-h-screen bg-background">
@@ -25,7 +27,14 @@ export default function CoffeePage() {
           className="flex flex-col gap-4 sm:grid sm:grid-cols-2"
         >
           {sortedCafes.map((cafe) => (
-            <CoffeeCard key={cafe.id} {...cafe} activeSort={sort} />
+            <CoffeeCard
+              key={cafe.id}
+              {...cafe}
+              activeSort={sort}
+              dimmed={hoveredId !== null && hoveredId !== cafe.id}
+              onHoverStart={() => setHoveredId(cafe.id)}
+              onHoverEnd={() => setHoveredId(null)}
+            />
           ))}
         </ul>
       </div>
