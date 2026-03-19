@@ -31,7 +31,6 @@ export function CoffeeCard({
           fill
           className="object-cover"
           sizes="120px"
-          onError={undefined}
         />
       </div>
 

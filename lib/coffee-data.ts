@@ -15,7 +15,7 @@ export const CAFES: readonly CafeItem[] = [
   {
     id: "bluebottle-hongdae",
     name: "블루보틀 홍대",
-    image: "/images/cafes/bluebottle.jpg",
+    image: "https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=400&h=300&fit=crop&auto=format",
     menuName: "아이스 아메리카노",
     rating: 4.8,
     reviewCount: 1200,
@@ -25,7 +25,7 @@ export const CAFES: readonly CafeItem[] = [
   {
     id: "starbucks-yeonnam",
     name: "스타벅스 연남",
-    image: "/images/cafes/starbucks.jpg",
+    image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&h=300&fit=crop&auto=format",
     menuName: "카페 라떼",
     rating: 4.7,
     reviewCount: 980,
@@ -35,7 +35,7 @@ export const CAFES: readonly CafeItem[] = [
   {
     id: "fritz-coffee",
     name: "프릳츠 커피",
-    image: "/images/cafes/fritz.jpg",
+    image: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=400&h=300&fit=crop&auto=format",
     menuName: "에스프레소",
     rating: 4.6,
     reviewCount: 756,
@@ -45,7 +45,7 @@ export const CAFES: readonly CafeItem[] = [
   {
     id: "intelligentsia",
     name: "인텔리전시아",
-    image: "/images/cafes/intelligentsia.jpg",
+    image: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&h=300&fit=crop&auto=format",
     menuName: "플랫 화이트",
     rating: 4.5,
     reviewCount: 432,
@@ -55,7 +55,7 @@ export const CAFES: readonly CafeItem[] = [
   {
     id: "coffee-libre",
     name: "커피리브레",
-    image: "/images/cafes/libre.jpg",
+    image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop&auto=format",
     menuName: "드립 커피",
     rating: 4.3,
     reviewCount: 300,
