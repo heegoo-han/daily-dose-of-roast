@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe: Coffee Finder</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --w-bg: #f5f5f5;
+    --w-border: #ccc;
+    --w-text: #555;
+    --w-muted: #aaa;
+    --w-fill: #eee;
+  }
+
+  * {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--w-text);
+  }
+
+  body { background: var(--w-bg); }
+
+  nav { position: sticky; top: 0; z-index: 40; background: var(--w-bg); border-bottom: 1px solid var(--w-border); }
+  nav button { cursor: pointer; font-size: 13px; }
+  nav button:hover { background: var(--w-fill); border-radius: 4px; }
+  nav button.active { font-weight: bold; border-bottom: 2px solid var(--w-text); }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .vp-toggle button {
+    font-size: 12px; padding: 2px 8px;
+    border: 1px solid var(--w-border); cursor: pointer; background: white;
+  }
+  .vp-toggle button:first-child { border-radius: 4px 0 0 4px; }
+  .vp-toggle button:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+  .vp-toggle button.active { background: var(--w-text); color: white; }
+
+  body.viewport-mobile .screen-content {
+    max-width: 375px !important;
+    margin: 24px auto !important;
+    border: 2px solid var(--w-border);
+    border-radius: 24px;
+    min-height: 667px;
+    background: white;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  .screen-notes {
+    background: #fffde7;
+    border-left: 3px solid #ffd54f;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    border-radius: 0 4px 4px 0;
+  }
+  .screen-notes summary { cursor: pointer; font-weight: bold; font-size: 12px; color: #b0a050; text-transform: uppercase; letter-spacing: 0.05em; }
+  .screen-notes p { margin: 6px 0 2px; color: #777; }
+  .screen-notes ul { margin: 4px 0 0 16px; padding: 0; color: #777; }
+  .screen-notes li { margin: 2px 0; }
+
+  /* ── Neo-Brutalism 공통 ── */
+  .nb-shadow      { box-shadow: 5px 5px 0 var(--w-text); }
+  .nb-shadow-sm   { box-shadow: 3px 3px 0 var(--w-text); }
+  .nb-border      { border: 3px solid var(--w-text); }
+  .nb-border-sm   { border: 2px solid var(--w-text); }
+
+  /* 헤더: 반전 블록 */
+  .nb-hero {
+    background: var(--w-text);
+    border-bottom: 4px solid var(--w-text);
+    padding: 20px 20px 16px;
+  }
+  .nb-hero * { color: white; }
+
+  /* 정렬 버튼 */
+  .sort-btn {
+    border: 2px solid var(--w-text);
+    background: white;
+    font-weight: 700;
+    padding: 8px 16px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: 11px;
+    cursor: default;
+    transition: none;
+  }
+  .sort-btn-active {
+    background: var(--w-text) !important;
+    box-shadow: 3px 3px 0 var(--w-border);
+  }
+  .sort-btn-active * { color: white !important; }
+  .sort-btn-active span { color: white !important; }
+
+  /* 카드 */
+  .nb-card {
+    border: 3px solid var(--w-text);
+    background: white;
+    box-shadow: 6px 6px 0 var(--w-border);
+    transition: none;
+  }
+
+  /* 이미지 플레이스홀더 */
+  .nb-img {
+    background: var(--w-fill);
+    border-right: 3px solid var(--w-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 120px;
+    min-height: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+  .nb-img::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--w-border) 0, var(--w-border) 4px, transparent 4px, transparent 8px);
+  }
+
+  /* 평점 뱃지 */
+  .nb-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    border: 2px solid var(--w-text);
+    padding: 2px 7px;
+    font-weight: 900;
+    font-size: 13px;
+    background: var(--w-fill);
+    letter-spacing: .02em;
+  }
+
+  /* 거리 태그 */
+  .nb-distance {
+    border: 2px solid var(--w-text);
+    font-weight: 700;
+    font-size: 10px;
+    padding: 2px 8px;
+    background: white;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    white-space: nowrap;
+  }
+
+  /* 메뉴 태그 */
+  .nb-menu-tag {
+    border: 2px solid var(--w-border);
+    font-size: 10px;
+    padding: 2px 8px;
+    background: var(--w-fill);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  /* 가게명 */
+  .nb-store-name {
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    line-height: 1.1;
+  }
+
+  /* 추천이유 */
+  .nb-reason {
+    font-size: 10px;
+    color: var(--w-muted);
+    border-top: 1px dashed var(--w-border);
+    padding-top: 6px;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* 리뷰 카운트 강조 (인기 순) */
+  .nb-review-badge {
+    border: 2px solid var(--w-text);
+    background: var(--w-text);
+    color: white !important;
+    font-weight: 900;
+    font-size: 10px;
+    padding: 2px 8px;
+    letter-spacing: .06em;
+  }
+
+  /* 섹션 레이블 */
+  .nb-section-label {
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--w-muted);
+    border-bottom: 2px solid var(--w-border);
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body class="p-0 m-0 viewport-desktop">
+
+<nav class="flex items-center gap-4 px-6 py-2">
+  <span class="text-xs" style="color:var(--w-muted)">wireframe</span>
+  <button id="nav-0" onclick="show(0)" class="px-2 py-1">기본 화면</button>
+  <button id="nav-1" onclick="show(1)" class="px-2 py-1">거리 순</button>
+  <button id="nav-2" onclick="show(2)" class="px-2 py-1">인기 순</button>
+  <div class="vp-toggle flex ml-auto">
+    <button id="vp-desktop" onclick="setViewport('desktop')" class="active">Desktop</button>
+    <button id="vp-mobile" onclick="setViewport('mobile')">Mobile</button>
+  </div>
+</nav>
+
+<!-- ===== SCREEN 0: 기본 화면 (평점 순) ===== -->
+<div id="screen-0" class="screen">
+  <div class="screen-content @container max-w-6xl mx-auto p-6">
+
+    <h2 class="text-lg font-bold mb-5" style="color:var(--w-muted); border-bottom:1px solid var(--w-border); padding-bottom:8px;">
+      기본 화면 — 평점 순 (COFFEE-001, 002, 005)
+    </h2>
+
+    <div class="screen-notes">
+      <details open>
+        <summary>Notes</summary>
+        <p>앱 진입 시 기본 상태. 목업 커피 가게 5개를 평점 높은 순으로 표시한다.</p>
+        <ul>
+          <li>COFFEE-001: 카드 5개가 평점 내림차순(4.8 → 4.3)으로 렌더링됨</li>
+          <li>COFFEE-002: "평점 순" 버튼이 활성(반전) 상태로 강조됨</li>
+          <li>COFFEE-005: 각 카드에 이미지·대표메뉴·평점·거리·추천이유 모두 표시됨</li>
+        </ul>
+      </details>
+    </div>
+
+    <!-- ── Hero Header ── -->
+    <div class="nb-hero mb-0" style="border: 3px solid var(--w-text); box-shadow: 6px 6px 0 var(--w-border);">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:var(--w-fill); letter-spacing:.15em;">☕ Find Your Cup</div>
+          <div style="font-size:36px; font-weight:900; color:white; letter-spacing:-.02em; line-height:1;">COFFEE<br>NOW</div>
+        </div>
+        <div style="border: 2px solid white; padding: 6px 10px; margin-top: 4px;">
+          <div class="flex items-center gap-1">
+            <i data-lucide="map-pin" style="width:12px;height:12px;color:white;"></i>
+            <span style="font-size:10px; color:white; font-weight:700; text-transform:uppercase; letter-spacing:.06em;">연남동</span>
+          </div>
+          <div style="font-size:9px; color:var(--w-fill); margin-top:2px;">서울 마포구</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Sort Bar ── -->
+    <div class="flex gap-0 mb-5 mt-5" style="border-left: none;">
+      <button class="sort-btn sort-btn-active" style="margin-right:8px;" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="star" style="width:11px;height:11px;color:white;"></i>평점 순
+        </span>
+      </button>
+      <button class="sort-btn" style="margin-right:8px;" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="navigation" style="width:11px;height:11px;"></i>거리 순
+        </span>
+      </button>
+      <button class="sort-btn" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="flame" style="width:11px;height:11px;"></i>인기 순
+        </span>
+      </button>
+    </div>
+
+    <!-- ── Section Label ── -->
+    <div class="nb-section-label">5 Cafés Near You</div>
+
+    <!-- ── Card List ── -->
+    <div class="flex flex-col gap-5 @md:grid @md:grid-cols-2">
+
+      <!-- Card 1 — 평점 4.8 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">블루보틀<br>홍대</span>
+              <span class="nb-distance">150m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating">
+                <i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>
+                4.8
+              </span>
+              <span class="nb-menu-tag">아이스 아메리카노</span>
+            </div>
+          </div>
+          <div class="nb-reason">
+            원두 직접 로스팅, 산미 없는 진한 맛
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 — 평점 4.7 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">스타벅스<br>연남</span>
+              <span class="nb-distance">350m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating">
+                <i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>
+                4.7
+              </span>
+              <span class="nb-menu-tag">카페 라떼</span>
+            </div>
+          </div>
+          <div class="nb-reason">
+            편안한 분위기, 넓은 좌석 다수
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 — 평점 4.6 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">프릳츠<br>커피</span>
+              <span class="nb-distance">520m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating">
+                <i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>
+                4.6
+              </span>
+              <span class="nb-menu-tag">에스프레소</span>
+            </div>
+          </div>
+          <div class="nb-reason">
+            스페셜티 원두, 독특한 플로럴 풍미
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 — 평점 4.5 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">인텔리<br>전시아</span>
+              <span class="nb-distance">680m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating">
+                <i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>
+                4.5
+              </span>
+              <span class="nb-menu-tag">플랫 화이트</span>
+            </div>
+          </div>
+          <div class="nb-reason">
+            다양한 브루잉 방식, 매일 신선 입고
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 — 평점 4.3 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">커피<br>리브레</span>
+              <span class="nb-distance">800m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating">
+                <i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>
+                4.3
+              </span>
+              <span class="nb-menu-tag">드립 커피</span>
+            </div>
+          </div>
+          <div class="nb-reason">
+            직수입 원두, 계절별 한정 메뉴 운영
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 1: 거리 순 ===== -->
+<div id="screen-1" class="screen">
+  <div class="screen-content @container max-w-6xl mx-auto p-6">
+
+    <h2 class="text-lg font-bold mb-5" style="color:var(--w-muted); border-bottom:1px solid var(--w-border); padding-bottom:8px;">
+      거리 순 정렬 (COFFEE-003)
+    </h2>
+
+    <div class="screen-notes">
+      <details open>
+        <summary>Notes</summary>
+        <p>"거리 순" 버튼 클릭 후. 가까운 순으로 카드 재배열. 거리 태그가 강조됨.</p>
+        <ul>
+          <li>COFFEE-003: 150m → 350m → 520m → 680m → 800m 순</li>
+          <li>"거리 순" 버튼만 활성(반전), 나머지 비활성</li>
+        </ul>
+      </details>
+    </div>
+
+    <!-- Hero Header -->
+    <div class="nb-hero mb-0" style="border: 3px solid var(--w-text); box-shadow: 6px 6px 0 var(--w-border);">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:var(--w-fill); letter-spacing:.15em;">☕ Find Your Cup</div>
+          <div style="font-size:36px; font-weight:900; color:white; letter-spacing:-.02em; line-height:1;">COFFEE<br>NOW</div>
+        </div>
+        <div style="border: 2px solid white; padding: 6px 10px; margin-top: 4px;">
+          <div class="flex items-center gap-1">
+            <i data-lucide="map-pin" style="width:12px;height:12px;color:white;"></i>
+            <span style="font-size:10px; color:white; font-weight:700; text-transform:uppercase; letter-spacing:.06em;">연남동</span>
+          </div>
+          <div style="font-size:9px; color:var(--w-fill); margin-top:2px;">서울 마포구</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sort Bar — 거리 순 활성 -->
+    <div class="flex gap-0 mb-5 mt-5">
+      <button class="sort-btn" style="margin-right:8px;" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="star" style="width:11px;height:11px;"></i>평점 순
+        </span>
+      </button>
+      <button class="sort-btn sort-btn-active" style="margin-right:8px;" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="navigation" style="width:11px;height:11px;color:white;"></i>거리 순
+        </span>
+      </button>
+      <button class="sort-btn" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="flame" style="width:11px;height:11px;"></i>인기 순
+        </span>
+      </button>
+    </div>
+
+    <div class="nb-section-label">5 Cafés Near You</div>
+
+    <div class="flex flex-col gap-5 @md:grid @md:grid-cols-2">
+
+      <!-- 150m -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">블루보틀<br>홍대</span>
+              <!-- 거리 순 → 거리 태그 반전 강조 -->
+              <span class="nb-distance" style="background:var(--w-text); color:white !important; border-color:var(--w-text);">150m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.8</span>
+              <span class="nb-menu-tag">아이스 아메리카노</span>
+            </div>
+          </div>
+          <div class="nb-reason">원두 직접 로스팅, 산미 없는 진한 맛</div>
+        </div>
+      </div>
+
+      <!-- 350m -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">스타벅스<br>연남</span>
+              <span class="nb-distance">350m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.7</span>
+              <span class="nb-menu-tag">카페 라떼</span>
+            </div>
+          </div>
+          <div class="nb-reason">편안한 분위기, 넓은 좌석 다수</div>
+        </div>
+      </div>
+
+      <!-- 520m -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">프릳츠<br>커피</span>
+              <span class="nb-distance">520m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.6</span>
+              <span class="nb-menu-tag">에스프레소</span>
+            </div>
+          </div>
+          <div class="nb-reason">스페셜티 원두, 독특한 플로럴 풍미</div>
+        </div>
+      </div>
+
+      <!-- 680m -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">인텔리<br>전시아</span>
+              <span class="nb-distance">680m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.5</span>
+              <span class="nb-menu-tag">플랫 화이트</span>
+            </div>
+          </div>
+          <div class="nb-reason">다양한 브루잉 방식, 매일 신선 입고</div>
+        </div>
+      </div>
+
+      <!-- 800m -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">커피<br>리브레</span>
+              <span class="nb-distance">800m</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.3</span>
+              <span class="nb-menu-tag">드립 커피</span>
+            </div>
+          </div>
+          <div class="nb-reason">직수입 원두, 계절별 한정 메뉴 운영</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: 인기 순 ===== -->
+<div id="screen-2" class="screen">
+  <div class="screen-content @container max-w-6xl mx-auto p-6">
+
+    <h2 class="text-lg font-bold mb-5" style="color:var(--w-muted); border-bottom:1px solid var(--w-border); padding-bottom:8px;">
+      인기 순 정렬 (COFFEE-004)
+    </h2>
+
+    <div class="screen-notes">
+      <details open>
+        <summary>Notes</summary>
+        <p>"인기 순" 클릭 후. 리뷰 수 많은 순으로 카드 재배열. 리뷰 카운트 반전 뱃지로 강조.</p>
+        <ul>
+          <li>COFFEE-004: 1,200 → 980 → 756 → 432 → 300 순</li>
+          <li>"인기 순" 버튼만 활성, 리뷰 수 뱃지가 반전(검정 배경)으로 돋보임</li>
+        </ul>
+      </details>
+    </div>
+
+    <!-- Hero Header -->
+    <div class="nb-hero mb-0" style="border: 3px solid var(--w-text); box-shadow: 6px 6px 0 var(--w-border);">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-widest mb-1" style="color:var(--w-fill); letter-spacing:.15em;">☕ Find Your Cup</div>
+          <div style="font-size:36px; font-weight:900; color:white; letter-spacing:-.02em; line-height:1;">COFFEE<br>NOW</div>
+        </div>
+        <div style="border: 2px solid white; padding: 6px 10px; margin-top: 4px;">
+          <div class="flex items-center gap-1">
+            <i data-lucide="map-pin" style="width:12px;height:12px;color:white;"></i>
+            <span style="font-size:10px; color:white; font-weight:700; text-transform:uppercase; letter-spacing:.06em;">연남동</span>
+          </div>
+          <div style="font-size:9px; color:var(--w-fill); margin-top:2px;">서울 마포구</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sort Bar — 인기 순 활성 -->
+    <div class="flex gap-0 mb-5 mt-5">
+      <button class="sort-btn" style="margin-right:8px;" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="star" style="width:11px;height:11px;"></i>평점 순
+        </span>
+      </button>
+      <button class="sort-btn" style="margin-right:8px;" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="navigation" style="width:11px;height:11px;"></i>거리 순
+        </span>
+      </button>
+      <button class="sort-btn sort-btn-active" disabled>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <i data-lucide="flame" style="width:11px;height:11px;color:white;"></i>인기 순
+        </span>
+      </button>
+    </div>
+
+    <div class="nb-section-label">5 Cafés Near You</div>
+
+    <div class="flex flex-col gap-5 @md:grid @md:grid-cols-2">
+
+      <!-- 리뷰 1,200 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">블루보틀<br>홍대</span>
+              <span class="nb-distance">150m</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.8</span>
+              <!-- 인기 순 → 리뷰 수 반전 강조 -->
+              <span class="nb-review-badge">1,200 리뷰</span>
+              <span class="nb-menu-tag">아이스 아메리카노</span>
+            </div>
+          </div>
+          <div class="nb-reason">원두 직접 로스팅, 산미 없는 진한 맛</div>
+        </div>
+      </div>
+
+      <!-- 리뷰 980 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">스타벅스<br>연남</span>
+              <span class="nb-distance">350m</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.7</span>
+              <span class="nb-review-badge">980 리뷰</span>
+              <span class="nb-menu-tag">카페 라떼</span>
+            </div>
+          </div>
+          <div class="nb-reason">편안한 분위기, 넓은 좌석 다수</div>
+        </div>
+      </div>
+
+      <!-- 리뷰 756 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">프릳츠<br>커피</span>
+              <span class="nb-distance">520m</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.6</span>
+              <span class="nb-review-badge">756 리뷰</span>
+              <span class="nb-menu-tag">에스프레소</span>
+            </div>
+          </div>
+          <div class="nb-reason">스페셜티 원두, 독특한 플로럴 풍미</div>
+        </div>
+      </div>
+
+      <!-- 리뷰 432 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">인텔리<br>전시아</span>
+              <span class="nb-distance">680m</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.5</span>
+              <span class="nb-review-badge">432 리뷰</span>
+              <span class="nb-menu-tag">플랫 화이트</span>
+            </div>
+          </div>
+          <div class="nb-reason">다양한 브루잉 방식, 매일 신선 입고</div>
+        </div>
+      </div>
+
+      <!-- 리뷰 300 -->
+      <div class="nb-card flex" style="min-height:140px;">
+        <div class="nb-img">
+          <i data-lucide="camera" style="width:24px;height:24px;color:var(--w-muted);"></i>
+        </div>
+        <div class="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="nb-store-name">커피<br>리브레</span>
+              <span class="nb-distance">800m</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap mb-2">
+              <span class="nb-rating"><i data-lucide="star" style="width:10px;height:10px;color:var(--w-text);"></i>4.3</span>
+              <span class="nb-review-badge">300 리뷰</span>
+              <span class="nb-menu-tag">드립 커피</span>
+            </div>
+          </div>
+          <div class="nb-reason">직수입 원두, 계절별 한정 메뉴 운영</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+var currentScreen = 0;
+var screenIds = [];
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('screen-' + id).classList.add('active');
+  document.querySelectorAll('nav button[id^="nav-"]').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('nav-' + id).classList.add('active');
+  currentScreen = screenIds.indexOf(id);
+}
+
+function setViewport(mode) {
+  document.body.classList.remove('viewport-mobile', 'viewport-desktop');
+  document.body.classList.add('viewport-' + mode);
+  document.querySelectorAll('.vp-toggle button').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('vp-' + mode).classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('nav button[id^="nav-"]').forEach(function(b) {
+    screenIds.push(parseInt(b.id.replace('nav-', '')));
+  });
+  var first = document.querySelector('nav button[id^="nav-"]');
+  if (first) first.click();
+  if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' && currentScreen < screenIds.length - 1) {
+    show(screenIds[currentScreen + 1]);
+  } else if (e.key === 'ArrowLeft' && currentScreen > 0) {
+    show(screenIds[currentScreen - 1]);
+  }
+});
+</script>
+<script>
+(function() {
+  var root = document.createElement('div');
+  root.id = 'wf-feedback-root';
+  document.body.appendChild(root);
+  var shadow = root.attachShadow({ mode: 'open' });
+  shadow.innerHTML = '<style>:host{all:initial}.wf-toggle{position:fixed;bottom:20px;right:20px;z-index:99999;width:44px;height:44px;border-radius:12px;border:1px solid hsl(214.3 31.8% 91.4%);background:hsl(0 0% 100%);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:hsl(215.4 16.3% 46.9%);box-shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);transition:all .15s ease}.wf-toggle:hover{background:hsl(210 40% 96.1%)}.wf-toggle.active{background:hsl(222.2 47.4% 11.2%);color:hsl(210 40% 98%);border-color:hsl(222.2 47.4% 11.2%)}.wf-highlight{position:absolute;background:rgba(59,130,246,.15);border:2px solid rgba(59,130,246,.5);pointer-events:none;z-index:99990;border-radius:2px;transition:all .1s}.wf-toast{position:fixed;bottom:72px;right:20px;z-index:99999;background:hsl(222.2 47.4% 11.2%);color:#fff;font-family:sans-serif;font-size:13px;padding:8px 16px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);opacity:0;transition:opacity .2s ease;pointer-events:none;max-width:320px;word-break:break-all}.wf-toast.visible{opacity:1}</style><div class="wf-toggle" id="wf-toggle-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.855z"/></svg></div><div class="wf-highlight" id="wf-highlight" style="display:none"></div><div class="wf-toast" id="wf-toast"></div>';
+  var toggleBtn=shadow.getElementById('wf-toggle-btn'),highlightEl=shadow.getElementById('wf-highlight'),toastEl=shadow.getElementById('wf-toast'),feedbackMode=false,toastTimer;
+  function showToast(t){toastEl.textContent=t;toastEl.classList.add('visible');clearTimeout(toastTimer);toastTimer=window.setTimeout(function(){toastEl.classList.remove('visible')},2000)}
+  function copyToClipboard(t){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){showToast('Copied: '+t)},function(){showToast('Copy failed')})}else{showToast('Copy failed')}}
+  toggleBtn.addEventListener('click',function(){feedbackMode=!feedbackMode;toggleBtn.classList.toggle('active',feedbackMode);if(!feedbackMode)highlightEl.style.display='none'});
+  function buildSelector(el){var parts=[],cur=el;while(cur&&cur!==document.body&&cur!==document.documentElement){if(cur.id){parts.unshift('#'+cur.id);break}var tag=cur.tagName,parent=cur.parentElement;if(parent){var idx=Array.from(parent.children).indexOf(cur)+1;parts.unshift(tag+':nth-child('+idx+')')}else parts.unshift(tag);cur=parent}return parts.join(' > ')}
+  function getScreenId(){var a=document.querySelector('.screen.active');return a?a.id.replace('screen-',''):'unknown'}
+  document.addEventListener('mousemove',function(e){if(!feedbackMode)return;var t=e.target;if(!t||t.closest('#wf-feedback-root')||t.closest('nav')){highlightEl.style.display='none';return}var s=t.closest('.screen.active');if(!s){highlightEl.style.display='none';return}var r=t.getBoundingClientRect();highlightEl.style.display='block';highlightEl.style.top=(r.top+window.scrollY)+'px';highlightEl.style.left=(r.left+window.scrollX)+'px';highlightEl.style.width=r.width+'px';highlightEl.style.height=r.height+'px'});
+  document.addEventListener('click',function(e){if(!feedbackMode)return;var t=e.target;if(!t||t.closest('#wf-feedback-root')||t.closest('nav'))return;var s=t.closest('.screen.active');if(!s)return;e.preventDefault();e.stopPropagation();copyToClipboard('[screen-'+getScreenId()+' > '+buildSelector(t)+']')},true);
+})();
+</script>
+</body>
+</html>
