@@ -1,4 +1,17 @@
 import type { CafeItem } from "./coffee-data"
+
+export async function geocodeAddress(
+  query: string
+): Promise<{ lat: number; lon: number } | null> {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=kr&limit=1`
+  const res = await fetch(url, {
+    headers: { "User-Agent": "coffee-finder-app/1.0" },
+  })
+  if (!res.ok) return null
+  const data = await res.json()
+  if (!data.length) return null
+  return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) }
+}
 import { pick, MOCK_RATINGS, MOCK_REVIEW_COUNTS, MOCK_MENUS, MOCK_IMAGES, MOCK_RECOMMENDATIONS } from "./mock-pool"
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {

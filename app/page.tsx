@@ -4,11 +4,12 @@ import { useState } from "react"
 import { NbHero } from "@/components/nb-hero"
 import { SortBar } from "@/components/sort-bar"
 import { CoffeeCard } from "@/components/coffee-card"
+import { LocationSearch } from "@/components/location-search"
 import { useCoffeeSort } from "@/hooks/use-coffee-sort"
 import { useCafeData } from "@/hooks/use-cafe-data"
 
 export default function CoffeePage() {
-  const { cafes, locationInfo, status } = useCafeData()
+  const { cafes, locationInfo, status, searchByAddress } = useCafeData()
   const { sort, setSort, sortedCafes } = useCoffeeSort(cafes)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
@@ -20,18 +21,9 @@ export default function CoffeePage() {
           locationDetail={locationInfo.locationDetail}
         />
 
-        <SortBar sort={sort} onSortChange={setSort} />
+        <LocationSearch onSearch={searchByAddress} status={status} />
 
-        {status === "denied" && (
-          <p className="text-xs text-muted-foreground text-center py-1">
-            위치 권한이 없어 샘플 데이터를 표시합니다
-          </p>
-        )}
-        {status === "error" && (
-          <p className="text-xs text-muted-foreground text-center py-1">
-            카페 정보를 불러오지 못했습니다
-          </p>
-        )}
+        <SortBar sort={sort} onSortChange={setSort} />
 
         <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground border-b-2 border-border pb-1">
           {sortedCafes.length} Cafés Near You
