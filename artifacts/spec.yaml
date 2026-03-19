@@ -1,0 +1,65 @@
+version: 1
+
+scenarios:
+  - id: "COFFEE-001"
+    name: "커피 가게 목록 초기 표시"
+    given: "사용자가 앱에 진입한 초기 화면"
+    when: "페이지가 로드된다"
+    then: "커피 가게 카드가 평점 높은 순으로 1개 이상 표시된다"
+    examples:
+      - input: { action: "page_load" }
+        expect:
+          cardCount: 5
+          firstCardRating: "4.8"
+          secondCardRating: "4.7"
+          sortLabel: "평점 순"
+
+  - id: "COFFEE-002"
+    name: "평점 순 정렬"
+    given: "커피 가게 카드 목록과 정렬 옵션이 표시된 화면"
+    when: "'평점 순' 정렬 버튼을 클릭한다"
+    then: "평점이 높은 카드가 낮은 카드보다 위에 표시되고 '평점 순' 버튼이 활성 상태로 강조된다"
+    examples:
+      - input: { sort: "rating" }
+        expect:
+          firstCardRating: "4.8"
+          secondCardRating: "4.7"
+          activeSortLabel: "평점 순"
+
+  - id: "COFFEE-003"
+    name: "거리 순 정렬"
+    given: "커피 가게 카드 목록과 정렬 옵션이 표시된 화면"
+    when: "'거리 순' 정렬 버튼을 클릭한다"
+    then: "가까운 카드가 먼 카드보다 위에 표시되고 '거리 순' 버튼이 활성 상태로 강조된다"
+    examples:
+      - input: { sort: "distance" }
+        expect:
+          firstCardDistance: "150m"
+          secondCardDistance: "800m"
+          activeSortLabel: "거리 순"
+
+  - id: "COFFEE-004"
+    name: "인기 순 정렬"
+    given: "커피 가게 카드 목록과 정렬 옵션이 표시된 화면"
+    when: "'인기 순' 정렬 버튼을 클릭한다"
+    then: "리뷰 수가 많은 카드가 위에 표시되고 '인기 순' 버튼이 활성 상태로 강조된다"
+    examples:
+      - input: { sort: "popularity" }
+        expect:
+          firstCardReviewCount: "1,200"
+          secondCardReviewCount: "300"
+          activeSortLabel: "인기 순"
+
+  - id: "COFFEE-005"
+    name: "카드에 핵심 정보 모두 표시"
+    given: "커피 가게 목록이 표시된 화면"
+    when: "첫 번째 카드를 바라본다"
+    then: "가게 이미지, 대표 메뉴, 평점, 거리, 추천 이유가 카드 안에 모두 표시된다"
+    examples:
+      - input: { cardIndex: 0 }
+        expect:
+          imageVisible: true
+          menuName: "아이스 아메리카노"
+          rating: "4.8"
+          distance: "150m"
+          recommendation: "원두 직접 로스팅, 산미 없는 진한 맛"
