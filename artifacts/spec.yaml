@@ -10,8 +10,8 @@ scenarios:
       - input: { action: "page_load" }
         expect:
           cardCount: 5
-          firstCardRating: "4.8"
-          secondCardRating: "4.7"
+          firstCardRating: "4.6"
+          secondCardRating: "4.2"
           sortLabel: "평점 순"
 
   - id: "COFFEE-002"
@@ -22,8 +22,8 @@ scenarios:
     examples:
       - input: { sort: "rating" }
         expect:
-          firstCardRating: "4.8"
-          secondCardRating: "4.7"
+          firstCardRating: "4.6"
+          secondCardRating: "4.2"
           activeSortLabel: "평점 순"
 
   - id: "COFFEE-003"
@@ -34,7 +34,7 @@ scenarios:
     examples:
       - input: { sort: "distance" }
         expect:
-          firstCardDistance: "150m"
+          firstCardDistance: "350m"
           secondCardDistance: "800m"
           activeSortLabel: "거리 순"
 
@@ -46,8 +46,8 @@ scenarios:
     examples:
       - input: { sort: "popularity" }
         expect:
-          firstCardReviewCount: "1,200"
-          secondCardReviewCount: "300"
+          firstCardReviewCount: "847"
+          secondCardReviewCount: "43"
           activeSortLabel: "인기 순"
 
   - id: "COFFEE-005"
@@ -59,7 +59,7 @@ scenarios:
       - input: { cardIndex: 0 }
         expect:
           imageVisible: true
-          menuName: "아이스 아메리카노"
-          rating: "4.8"
-          distance: "150m"
-          recommendation: "원두 직접 로스팅, 산미 없는 진한 맛"
+          menuName: "시금치 리코타 베이글"
+          rating: "4.6"
+          distance: "350m"
+          recommendation: "천연발효종 베이글, 방부제 무첨가 건강한 맛"

@@ -12,7 +12,7 @@ export default function CoffeePage() {
   return (
     <main className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-5">
-        <NbHero location="연남동" locationDetail="서울 마포구" />
+        <NbHero location="마곡동" locationDetail="서울 강서구" />
 
         <SortBar sort={sort} onSortChange={setSort} />
 
